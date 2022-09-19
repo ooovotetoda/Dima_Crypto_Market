@@ -1,4 +1,4 @@
-from texts import MESSAGE_TXT, KEYBOARDS
+from texts import StatesMsg
 from keyboard import get_keyboard
 from products_list import available_products
 
@@ -10,19 +10,19 @@ class Mess:
 
 
 states = {
-    "start":             Mess(MESSAGE_TXT.start, KEYBOARDS.start, None),
-    "products":          Mess(MESSAGE_TXT.products, KEYBOARDS.products, "start"),
-    "personal_cabinet":  Mess(MESSAGE_TXT.personal_cabinet, KEYBOARDS.personal_cabinet, "start"),
-    "deposit":           Mess(MESSAGE_TXT.deposit, KEYBOARDS.deposit, "personal_cabinet"),
-    "deposit_crypto":    Mess(MESSAGE_TXT.crypto, KEYBOARDS.crypto, "deposit"),
-    "deposit_fiat":      Mess(MESSAGE_TXT.fiat, KEYBOARDS.fiat, "deposit"),
-    "check_transaction": Mess(MESSAGE_TXT.check_transaction, KEYBOARDS.check_transaction, "deposit_crypto"),
-    "purchase_history":  Mess(MESSAGE_TXT.purchase_history, KEYBOARDS.purchase_history, "personal_cabinet"),
-    "balance_history":   Mess(MESSAGE_TXT.balance_history, KEYBOARDS.balance_history, "personal_cabinet"),
-    "support":           Mess(MESSAGE_TXT.support, KEYBOARDS.support, "start"),
+    "start":             Mess(StatesMsg.start.get("message"), StatesMsg.start["keyboard"], None),
+    "products":          Mess(StatesMsg.products.get("message"), StatesMsg.products["keyboard"], "start"),
+    "personal_cabinet":  Mess(StatesMsg.personal_cabinet.get("message"), StatesMsg.personal_cabinet["keyboard"], "start"),
+    "deposit":           Mess(StatesMsg.deposit.get("message"), StatesMsg.deposit["keyboard"], "personal_cabinet"),
+    "deposit_crypto":    Mess(StatesMsg.crypto.get("message"), StatesMsg.crypto["keyboard"], "deposit"),
+    "deposit_fiat":      Mess(StatesMsg.fiat.get("message"), StatesMsg.fiat["keyboard"], "deposit"),
+    "check_transaction": Mess(StatesMsg.check_transaction.get("message"), StatesMsg.check_transaction["keyboard"], "deposit_crypto"),
+    "purchase_history":  Mess(StatesMsg.purchase_history.get("message"), StatesMsg.purchase_history["keyboard"], "personal_cabinet"),
+    "balance_history":   Mess(StatesMsg.balance_history.get("message"), StatesMsg.balance_history["keyboard"], "personal_cabinet"),
+    "support":           Mess(StatesMsg.support.get("message"), StatesMsg.support["keyboard"], "start"),
 }
 
 #Добавляю стейты всех товаров
 for key, val in available_products.items():
-    states = states | {f'{key}': Mess(val.get('description'), KEYBOARDS.product, "products")}
+    states = states | {f'{key}': Mess(val.get('description'), StatesMsg.product.get("keyboard"), "products")}
 

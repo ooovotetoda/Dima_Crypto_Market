@@ -1,46 +1,55 @@
-class MESSAGE_TXT:
-    start = "Это бот для оплаты криптовалютами!"
-    personal_cabinet = "Это ваш персональный кабинет"
-    deposit = "Выберете способ оплаты"
-    crypto = "Оплата криптовалютами"
-    fiat = "*Подключаем робокассу*"
-    check_transaction = "Нажмите кнопку для подтверждения транзакции"
-    purchase_history = "*История покупок, товары, даты и тд*"
-    balance_history = "*История баланса пользователя*"
-    support = "Не грусти, брат. Всё будет хорошо)"
+class StatesMsg:
+    start = {"message": "Это бот для оплаты криптовалютами!",
+             "button": "",
+             "callback": "products",
+             "keyboard": ["products", "personal_cabinet", "support"]}
 
-class BUTTONS_TXT:
-    personal_cabinet = "Личный кабинет"
-    deposit = "Пополнить баланс"
-    crypto = "Криптовалюты"
-    fiat = "Фиат"
-    check_transaction = "Проверить транзакцию"
-    purchase_history = "История покупок"
-    balance_history = "История баланса"
-    support = "Поддержка"
-    # back = "Назад"
+    products = {"message": "Все товары",
+                "button": "Товары",
+                "callback": "products",
+                "keyboard": ["crypto"]}
 
+    personal_cabinet = {"message": "Это ваш личный кабинет",
+                        "button": "Личный кабинет",
+                        "callback": "personal_cabinet",
+                        "keyboard": ["deposit", "purchase_history", "balance_history"]}
 
-class CALLBACK_TXT:
-    personal_cabinet = "personal_cabinet"
-    deposit = "deposit"
-    crypto = "deposit_crypto"
-    fiat = "deposit_fiat"
-    check_transaction = "check_transaction"
-    purchase_history = "purchase_history"
-    balance_history = "balance_history"
-    support = "support"
-    # back = "back"
+    deposit = {"message": "Выберете способ оплаты",
+               "button": "Пополнить баланс",
+               "callback": "deposit",
+               "keyboard": ["crypto", "fiat"]}
 
-class KEYBOARDS:
-    start = ["personal_cabinet", "support"]
-    personal_cabinet = ["deposit", "purchase_history", "balance_history"]
-    deposit = ["crypto", "fiat"]
-    crypto = []
-    fiat = []
-    check_transaction = ["check_transaction"]
-    purchase_history = ["support"]
-    balance_history = ["support"]
-    support = []
+    crypto = {"message": "Оплата криптовалютами",
+              "button": "Криптовалюты",
+              "callback": "deposit_crypto",
+              "keyboard": []}
 
+    fiat = {"message": "*Подключаем робокассу*",
+            "button": "Фиат",
+            "callback": "deposit_fiat",
+            "keyboard": []}
 
+    check_transaction = {"message": "Нажмите кнопку для подтверждения транзакции",
+                         "button": "Проверить транзакцию",
+                         "callback": "check_transaction",
+                         "keyboard": ["check_transaction"]}
+
+    purchase_history = {"message": "*История покупок, товары, даты и тд*",
+                        "button": "История покупок",
+                        "callback": "purchase_history",
+                        "keyboard": ["support"]}
+
+    balance_history = {"message": "*История баланса пользователя*",
+                       "button": "История баланса",
+                       "callback": "balance_history",
+                        "keyboard": ["support"]}
+
+    support = {"message": "Не грусти, брат. Всё будет хорошо)",
+               "button": "Поддержка",
+               "callback": "support",
+               "keyboard": []}
+
+    product = {"message": "Текст товара",
+               "button": "Название товара",
+               "callback": "product",
+               "keyboard": []}
