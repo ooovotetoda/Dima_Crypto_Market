@@ -25,4 +25,3 @@ states = {
 #Добавляю стейты всех товаров
 for key, val in available_products.items():
     states = states | {f'{key}': Mess(val.get('description'), StatesMsg.product.get("keyboard"), "products")}
-

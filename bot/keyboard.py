@@ -12,3 +12,4 @@ def get_keyboard(buttons, prev_state):
         keyboard.button(text="Назад", callback_data=prev_state)
     keyboard.adjust(1)
     return keyboard.as_markup()
+

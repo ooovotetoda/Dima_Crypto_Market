@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardButton
 
+from products_list import available_products
 from texts import StatesMsg
 
 personal_cabinet = InlineKeyboardButton(text=StatesMsg.personal_cabinet.get("button"), callback_data=StatesMsg.personal_cabinet.get("callback"))
@@ -24,3 +25,7 @@ BUTTONS = {
     "support": support,
     "products": products,
 }
+
+for key, val in available_products.items():
+    BUTTONS = BUTTONS | {f'{key}': InlineKeyboardButton(text=val.get("name"),callback_data=key)}
+

@@ -1,3 +1,10 @@
+from products_list import available_products
+
+prods = []
+for key, val in available_products.items():
+    prods.append(key)
+
+
 class StatesMsg:
     start = {"message": "Это бот для оплаты криптовалютами!",
              "button": "",
@@ -7,7 +14,7 @@ class StatesMsg:
     products = {"message": "Все товары",
                 "button": "Товары",
                 "callback": "products",
-                "keyboard": ["crypto"]}
+                "keyboard": prods}
 
     personal_cabinet = {"message": "Это ваш личный кабинет",
                         "button": "Личный кабинет",
