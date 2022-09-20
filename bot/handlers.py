@@ -12,7 +12,8 @@ async def cmd_start(message: Message):
     state_data = states.get("start")
     await message.answer(
         text=state_data.text_state,
-        reply_markup=state_data.keyboard
+        reply_markup=state_data.keyboard,
+        parse_mode="HTML"
     )
 
 
@@ -21,6 +22,7 @@ async def process_callback(callback: CallbackQuery):
     state_data = states.get(callback.data)
     await callback.message.edit_text(
         text=state_data.text_state,
-        reply_markup=state_data.keyboard
+        reply_markup=state_data.keyboard,
+        parse_mode="HTML"
     )
     await callback.answer()
