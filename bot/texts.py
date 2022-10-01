@@ -16,25 +16,30 @@ class StatesMsg:
                 "callback": "products",
                 "keyboard": prods}
 
+    go_pay = {"message": "Выберете способ оплаты",
+             "button": "Перейти к оплате",
+             "callback": "go_pay",
+             "keyboard": []}
+
     personal_cabinet = {"message": "Это ваш личный кабинет",
                         "button": "Личный кабинет",
                         "callback": "personal_cabinet",
-                        "keyboard": ["deposit", "purchase_history", "balance_history"]}
+                        "keyboard": ["purchase_history"]}
 
-    deposit = {"message": "Выберете способ оплаты",
-               "button": "Пополнить баланс",
-               "callback": "deposit",
-               "keyboard": ["crypto", "fiat"]}
+    # deposit = {"message": "Выберете способ оплаты",
+    #            "button": "Пополнить баланс",
+    #            "callback": "deposit",
+    #            "keyboard": ["crypto", "fiat"]}
 
-    crypto = {"message": "Оплата криптовалютами",
-              "button": "Криптовалюты",
-              "callback": "deposit_crypto",
-              "keyboard": []}
+    # crypto = {"message": "Оплата криптовалютами",
+    #           "button": "Криптовалюты",
+    #           "callback": "deposit_crypto",
+    #           "keyboard": []}
 
-    fiat = {"message": "*Подключаем робокассу*",
-            "button": "Фиат",
-            "callback": "deposit_fiat",
-            "keyboard": []}
+    # fiat = {"message": "*Подключаем робокассу*",
+    #         "button": "Фиат",
+    #         "callback": "deposit_fiat",
+    #         "keyboard": []}
 
     check_transaction = {"message": "Нажмите кнопку для подтверждения транзакции",
                          "button": "Проверить транзакцию",
@@ -46,10 +51,10 @@ class StatesMsg:
                         "callback": "purchase_history",
                         "keyboard": ["support"]}
 
-    balance_history = {"message": "*История баланса пользователя*",
-                       "button": "История баланса",
-                       "callback": "balance_history",
-                        "keyboard": ["support"]}
+    # balance_history = {"message": "*История баланса пользователя*",
+    #                    "button": "История баланса",
+    #                    "callback": "balance_history",
+    #                     "keyboard": ["support"]}
 
     support = {"message": "Не грусти, брат. Всё будет хорошо)",
                "button": "Поддержка",
@@ -59,4 +64,4 @@ class StatesMsg:
     product = {"message": "Текст товара",
                "button": "Название товара",
                "callback": "product",
-               "keyboard": []}
+               "keyboard": ["go_pay"]}
