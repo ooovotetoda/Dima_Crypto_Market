@@ -1,4 +1,7 @@
 from products_list import available_products
+from data_base.wallet_functions import gen_address
+
+address = gen_address(55019373)[0]
 
 prods = []
 for key, val in available_products.items():
@@ -16,7 +19,7 @@ class StatesMsg:
                 "callback": "products",
                 "keyboard": prods}
 
-    go_pay = {"message": "Выберете способ оплаты",
+    go_pay = {"message": f"Адрес для перевода:\n{address}",
              "button": "Перейти к оплате",
              "callback": "go_pay",
              "keyboard": []}
