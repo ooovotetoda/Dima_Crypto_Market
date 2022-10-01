@@ -45,7 +45,9 @@ try:
              email VARCHAR(30),
              balance DECIMAL(12,2) CONSTRAINT LK_balance_check CHECK(balance>=0) DEFAULT 0,
              cur_orders INTEGER DEFAULT 0,
-             hist VARCHAR(200) DEFAULT 0);''')
+             hist VARCHAR(200) DEFAULT 0,
+             address VARCHAR(100),
+             wif VARCHAR(100));''')
         cur.execute('''CREATE TABLE IF NOT EXISTS orders  
              (id_orders INTEGER PRIMARY KEY,
              id_user INTEGER NOT NULL,
