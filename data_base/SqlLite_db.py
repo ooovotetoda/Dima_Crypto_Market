@@ -61,8 +61,9 @@ try:
              id_products INTEGER NOT NULL,
              sum INTEGER NOT NULL,
              date DATE NOT NULL);''')
-        cur.execute('''CREATE TABLE IF NOT EXISTS free_wallets
-                     (wallet TEXT PRIMARY KEY,
+        cur.execute('''CREATE TABLE IF NOT EXISTS busy_wallets
+                     (id_person TEXT,
+                     wallet TEXT PRIMARY KEY,
                      coin TEXT);''')
         con.commit()
 
@@ -153,50 +154,20 @@ try:
             print(e)
 
 
-    def add_free_wallet(wallet, coin):
-        cur.execute('INSERT INTO free_wallets VALUES(?,?);', (wallet, coin))
+    def add_free_wallet(id_cur, wallet, coin):
+        cur.execute('INSERT INTO busy_wallets VALUES(?,?,?);', (id_cur, wallet, coin))
         con.commit()
 
 
     def select_wallet(coin):
-        return cur.execute('SELECT * FROM free_wallets WHERE coin=?', (coin,))
+        return cur.execute('SELECT * FROM busy_wallets WHERE coin=?', (coin,))
 
 
     def select_wallet_count(coin):
-        return list(cur.execute('SELECT COUNT(*) FROM free_wallets WHERE coin=?', (coin,)).fetchone())
-
-
-    def create_wallet(coin):
-        try:
-            if coin == 'USDT':
-                acc = AuthServiceProxy('http://USDT:USDTpass@127.0.0.1:6006')
-                new_wallet = acc.getnewaddress()
-                # добавляем кошель в дб
-                add_free_wallet(wallet=new_wallet, coin=coin)
-                return new_wallet
-        except Exception as e:
-            print(e)
-            return False
-
-
-    def main():
-        coins = ['USDT']
-        for coin in coins:
-            usdt_wal = select_wallet_count(coin)
-            if usdt_wal is not None and int(usdt_wal[0]) < 10:
-                create_wallet(coin)
-
-
-    def get_wallet(coin):
-        order_wallet = select_wallet(coin)
-        if order_wallet is not None:
-            return order_wallet.fetchone()[0]
-        return create_wallet(coin)
+        return list(cur.execute('SELECT COUNT(*) FROM busy_wallets WHERE coin=?', (coin,)).fetchone())
 
 
     db_start()
-
-    get_wallet('USDT')
     # add_users(user_id=124125, username='Booblya', email='qweyu@mail.ru')
     # add_products('Skit', 'КОТАН', 'вот такое животное', 100, 10101, 1488)
     # add_orders(124125, 1, 5)
@@ -208,7 +179,7 @@ try:
 
 except Exception as TotalError:
     print("Ошибка при работе с SQLite3:", TotalError, end='\n')
-# finally:
-#     if __name__ == '__main__':
-#         con.close()
+    # finally:
+    #     if __name__ == '__main__':
+    #         con.close()
     print('База данных закрыта')
