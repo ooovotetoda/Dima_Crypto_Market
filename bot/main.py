@@ -6,8 +6,6 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 import handlers
 
-from config import TOKEN
-
 
 # Запуск бота
 async def main():
@@ -16,7 +14,7 @@ async def main():
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
     dp = Dispatcher(storage=MemoryStorage())
-    bot = Bot(TOKEN)
+    bot = Bot("5501937377:AAEZygpg9QF_iulyWb-y2COErvOdr2UKYwc")
 
     dp.include_router(handlers.router)
 
