@@ -1,9 +1,7 @@
 import sqlite3 as sql
 from datetime import datetime
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 
 # psycopg2-binary
-# убрать принты. Пока они нужны, чтобы понимать что и куда
 
 """
   sql_start() - инициализация базы данных

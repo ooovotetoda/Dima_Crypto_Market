@@ -48,12 +48,6 @@ def check_wallet_value(wallet):
     x = requests.get(url)
     wallet = x.json()
 
-    print('Итоговый баланс:' + str(wallet['final_balance']))
-    print('Транзакции:' + str(wallet['txs']))
-
-    if wallet['total_received'] == 0:
-        print('баланс пустой')
-
     return wallet['final_balance'], wallet['txs']
 
 
@@ -79,7 +73,6 @@ def check_transaction(coin_hash):
     url = 'https://blockchain.info/pushtx'
     x = requests.post(url, data={'tx': coin_hash})
     result = x.text
-    print(result)
     return result
 
 

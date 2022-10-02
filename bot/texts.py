@@ -8,8 +8,6 @@ prods = []
 for key, val in available_products.items():
     prods.append(key)
 
-
-
 class StatesMsg:
     start = {"message": "Это бот для оплаты криптовалютами!",
              "button": "",
@@ -21,7 +19,8 @@ class StatesMsg:
                 "callback": "products",
                 "keyboard": prods}
 
-    go_pay = {"message": f"Адрес для перевода:<b>\n{public}\n\n</b>",
+    go_pay = {"message": f"Адрес для перевода:<b>\n{public}\n\n</b>"
+                        f"{get_from_lk()}",
              "button": "Перейти к оплате",
              "callback": "go_pay",
              "keyboard": ["check_transaction"]}
