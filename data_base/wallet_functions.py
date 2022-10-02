@@ -84,12 +84,8 @@ def check_transaction(coin_hash):
 
 
 vl, tr = check_wallet_value('164r7cuiBjC8dLpPPu7ykjuunMSwpwak6J')
-print(vl, tr)
 
 # create_transaction(wallet='17ya3bCpPioyPH8kAyFkEDBUqdjF6wwPxo',
 #                    wif='L46ixenNSu8Bqk899ZrH8Y96t8DHqJ1ZyxzQBGFTbh38rLHLaPoY', amount=0.1, coin='btc')
 
 key = PrivateKey('L46ixenNSu8Bqk899ZrH8Y96t8DHqJ1ZyxzQBGFTbh38rLHLaPoY')
-print(key.address)
-print(key.get_balance('btc'))
-print(key.get_balance('btc'))
