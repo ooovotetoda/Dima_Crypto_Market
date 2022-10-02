@@ -11,7 +11,7 @@ router = Router()
 @router.message(Command(commands=["start"]))
 async def cmd_start(message: Message):
     user_id = message.from_user.id
-    add_users(user_id, "name", "male")
+    add_users(user_id)
     state_data = states.get("start")
     await message.answer(
         text=state_data.text_state,
