@@ -167,6 +167,11 @@ try:
         return list(cur.execute('SELECT COUNT(*) FROM busy_wallets WHERE coin=?', (coin,)).fetchone())
 
 
+    def get_from_lk(choice):
+        cur.execute(f'SELECT * FROM LK WHERE id_LK={choice}')
+        return cur.fetchall()[0]
+
+
     db_start()
     # add_users(user_id=124125, username='Booblya', email='qweyu@mail.ru')
     # add_products('Skit', 'КОТАН', 'вот такое животное', 100, 10101, 1488)
@@ -175,6 +180,8 @@ try:
     # print(get_all_products(-1))
     # print(show_lk(choice='email', user_id=124125))
     # print(show_lk())
+
+    print(get_from_lk('2'))
 
 
 except Exception as TotalError:

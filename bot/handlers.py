@@ -1,6 +1,6 @@
 from aiogram import Router
 from aiogram.types import Message, CallbackQuery
-from aiogram.dispatcher.filters import Command
+from aiogram.filters import Command
 
 from states import states
 
