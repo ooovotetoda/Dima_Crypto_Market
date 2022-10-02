@@ -1,5 +1,6 @@
 from products_list import available_products
 from data_base.wallet_functions import gen_address
+from data_base.SqlLite_db import get_from_lk
 
 public, private = gen_address(0)
 

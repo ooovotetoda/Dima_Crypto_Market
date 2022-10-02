@@ -1,20 +1,28 @@
 import sqlite3 as sql
 from datetime import datetime
+from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 
 # psycopg2-binary
 # убрать принты. Пока они нужны, чтобы понимать что и куда
 
 """
   sql_start() - инициализация базы данных
+
   add_user(user_id:int, username:str, email:str) - добавление нового пользователя, если есть, то принтует об этом
+
   add_products(key: str, name: str, description: str, amount: int, price: int, logo: int) - добавление новых продуктов, 
                                                 если такой ключ уже существует, то просто апдейтим данные на этот ключ
+
   add_orders(id_user: int, id_prod: int, amount: int) - добавление заказа (уникальности не требует)
+
   add_history(id_hash: str, curr_order: int) - добавление заказа в историю (уникальности не требует) 
+
   get_all_products(choice:int) - выборка продуктов из бд. По-умолчанию все продукты. Чтобы вывести конкретный - передать 
                                  существующий в таблице айди продукта  
+
   show_lk(choice='*', user_id=('*',)) - выборка полей таблицы LK. По-умолчанию все поля и все пользователи.
                                         Чтобы вывести конкретное поле и пользователя - передать 
+
 """
 
 try:
@@ -159,6 +167,11 @@ try:
         return list(cur.execute('SELECT COUNT(*) FROM busy_wallets WHERE coin=?', (coin,)).fetchone())
 
 
+    def get_from_lk(choice):
+        cur.execute(f'SELECT * FROM LK WHERE id_LK={choice}')
+        return cur.fetchall()[0]
+
+
     db_start()
     # add_users(user_id=124125, username='Booblya', email='qweyu@mail.ru')
     # add_products('Skit', 'КОТАН', 'вот такое животное', 100, 10101, 1488)
@@ -167,6 +180,8 @@ try:
     # print(get_all_products(-1))
     # print(show_lk(choice='email', user_id=124125))
     # print(show_lk())
+
+    print(get_from_lk('2'))
 
 
 except Exception as TotalError:
