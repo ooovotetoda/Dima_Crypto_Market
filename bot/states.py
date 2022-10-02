@@ -17,7 +17,7 @@ states = {
     # "deposit":           Mess(StatesMsg.deposit.get("message"), StatesMsg.deposit["keyboard"], "personal_cabinet"),
     # "deposit_crypto":    Mess(StatesMsg.crypto.get("message"), StatesMsg.crypto["keyboard"], "deposit"),
     # "deposit_fiat":      Mess(StatesMsg.fiat.get("message"), StatesMsg.fiat["keyboard"], "deposit"),
-    "check_transaction": Mess(StatesMsg.check_transaction.get("message"), StatesMsg.check_transaction["keyboard"], "deposit_crypto"),
+    "check_transaction": Mess(StatesMsg.check_transaction.get("message"), StatesMsg.check_transaction["keyboard"], "go_pay"),
     "purchase_history":  Mess(StatesMsg.purchase_history.get("message"), StatesMsg.purchase_history["keyboard"], "personal_cabinet"),
     # "balance_history":   Mess(StatesMsg.balance_history.get("message"), StatesMsg.balance_history["keyboard"], "personal_cabinet"),
     "support":           Mess(StatesMsg.support.get("message"), StatesMsg.support["keyboard"], "start"),
