@@ -7,7 +7,7 @@ from states import states
 router = Router()
 
 
-@router.message(Command(commands="start"))
+@router.message(Command(commands=["start"]))
 async def cmd_start(message: Message):
     state_data = states.get("start")
     await message.answer(

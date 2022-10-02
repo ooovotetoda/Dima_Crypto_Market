@@ -2,8 +2,6 @@ from bipwallet.utils import *
 from bipwallet import wallet
 from bit import PrivateKey
 import requests
-import schedule
-import json
 
 
 def create_wallet():
@@ -50,8 +48,8 @@ def check_wallet_value(wallet):
     x = requests.get(url)
     wallet = x.json()
 
-    # print('Итоговый баланс:' + str(wallet['final_balance']))
-    # print('Транзакции:' + str(wallet['txs']))
+    print('Итоговый баланс:' + str(wallet['final_balance']))
+    print('Транзакции:' + str(wallet['txs']))
 
     if wallet['total_received'] == 0:
         print('баланс пустой')
@@ -76,40 +74,18 @@ def create_transaction(wallet, wif, amount, coin):
     coin_hash = my_key.create_transaction([(wallet, amount, f'{coin}')], fee=fee, absolute_fee=True)
     return coin_hash
 
-# проверка транзы для всех остальных хз пока как должно работать, нужно разобраться с созданием транзакции
+
 def check_transaction(coin_hash):
     url = 'https://blockchain.info/pushtx'
     x = requests.post(url, data={'tx': coin_hash})
     result = x.text
-    if result is not None:
-        return result
-    schedule.every(5).minutes.do(check_transaction(coin_hash=coin_hash))
+    print(result)
     return result
 
 
-
-# проверка транзы для трона
-def check_transaction_by_hash(coin_hash):
-    hash_url = f'https://apilist.tronscanapi.com/api/transaction-info?hash={coin_hash}'
-    res = json.loads(requests.get(hash_url).text)
-    tokenTransferInfo = res['tokenTransferInfo']
-    confirmed, from_address, to_address, amount_str = res['confirmed'], \
-                                                      tokenTransferInfo['from_address'], \
-                                                      tokenTransferInfo['to_address'], \
-                                                      tokenTransferInfo['amount_str']
-    return confirmed, from_address, to_address, int(amount_str) / 1000000
-
-
 vl, tr = check_wallet_value('164r7cuiBjC8dLpPPu7ykjuunMSwpwak6J')
-print(vl, tr)
 
-# create_transaction(wallet='L3sFfRNKxKq4kf13NoJXYFcYWWUtvypkA3LJgcVzMWwaA4MfiDvP',
+# create_transaction(wallet='17ya3bCpPioyPH8kAyFkEDBUqdjF6wwPxo',
 #                    wif='L46ixenNSu8Bqk899ZrH8Y96t8DHqJ1ZyxzQBGFTbh38rLHLaPoY', amount=0.1, coin='btc')
 
-# key = PrivateKey('L46ixenNSu8Bqk899ZrH8Y96t8DHqJ1ZyxzQBGFTbh38rLHLaPoY')
-# print(key.address)
-# print(key.get_balance('btc'))
-# print(key.get_balance('btc'))
-
-# 17ya3bCpPioyPH8kAyFkEDBUqdjF6wwPxo
-print(check_transaction_by_hash('579bc838dec43e26819564f00c22cb3aa55d4d2ca97e6ed00cd0846cea84b49b'))
+key = PrivateKey('L46ixenNSu8Bqk899ZrH8Y96t8DHqJ1ZyxzQBGFTbh38rLHLaPoY')

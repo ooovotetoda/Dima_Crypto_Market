@@ -1,11 +1,13 @@
 from products_list import available_products
 from data_base.wallet_functions import gen_address
+from data_base.SqlLite_db import get_from_lk
 
-address = gen_address(55019373)[0]
+public, private = gen_address(0)
 
 prods = []
 for key, val in available_products.items():
     prods.append(key)
+
 
 
 class StatesMsg:
@@ -19,10 +21,10 @@ class StatesMsg:
                 "callback": "products",
                 "keyboard": prods}
 
-    go_pay = {"message": f"Адрес для перевода:\n{address}",
+    go_pay = {"message": f"Адрес для перевода:<b>\n{public}\n\n</b>",
              "button": "Перейти к оплате",
              "callback": "go_pay",
-             "keyboard": []}
+             "keyboard": ["check_transaction"]}
 
     personal_cabinet = {"message": "Это ваш личный кабинет",
                         "button": "Личный кабинет",
@@ -44,10 +46,10 @@ class StatesMsg:
     #         "callback": "deposit_fiat",
     #         "keyboard": []}
 
-    check_transaction = {"message": "Нажмите кнопку для подтверждения транзакции",
+    check_transaction = {"message": "*Проверяем транзакцию*",
                          "button": "Проверить транзакцию",
                          "callback": "check_transaction",
-                         "keyboard": ["check_transaction"]}
+                         "keyboard": []}
 
     purchase_history = {"message": "*История покупок, товары, даты и тд*",
                         "button": "История покупок",
