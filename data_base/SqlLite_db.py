@@ -26,7 +26,7 @@ from datetime import datetime
 try:
     def db_start():
         global con, cur
-        con = sql.connect(database="crypto")  # имя ДБ, к которой мы подключаемся
+        con = sql.connect(database="../data_base/crypto")  # имя ДБ, к которой мы подключаемся
         cur = con.cursor()
         print("Database opened successfully")
         cur.execute('''CREATE TABLE IF NOT EXISTS products
@@ -39,13 +39,12 @@ try:
              logo VARCHAR(200));''')
         cur.execute('''CREATE TABLE IF NOT EXISTS LK  
              (id_LK INTEGER CONSTRAINT LK_id PRIMARY KEY NOT NULL,
-             username VARCHAR(30), 
-             email VARCHAR(30),
              balance DECIMAL(12,2) CONSTRAINT LK_balance_check CHECK(balance>=0) DEFAULT 0,
              cur_orders INTEGER DEFAULT 0,
              hist VARCHAR(200) DEFAULT 0,
-             address VARCHAR(100),
-             wif VARCHAR(100));''')
+             state BLOB DEFAULT FALSE,
+             address VARCHAR(100) DEFAULT 0,
+             wif VARCHAR(100) DEFAULT 0);''')
         cur.execute('''CREATE TABLE IF NOT EXISTS orders  
              (id_orders INTEGER PRIMARY KEY,
              id_user INTEGER NOT NULL,
@@ -66,16 +65,25 @@ try:
         con.commit()
 
 
-    def add_users(user_id: int, username: str, email: str):
+    def first_seen(user_id: int):
         try:
-            if not cur.execute('SELECT * FROM lk WHERE id_lk=?', [user_id]):
-                cur.execute('INSERT INTO lk (id_lk, username, email) VALUES(?, ?, ?);', (user_id, username, email))
+            cur.execute("SELECT id_LK FROM LK WHERE id_LK=?", (user_id,))
+            rez = cur.fetchall()
+
+            if not rez:
+                print('Добавил в базу')
+                add_user(user_id)
+                return True
             else:
-                print('Такой пользователь уже существует')
-                raise Exception
-            con.commit()
+                print('Уже в базе')
+                return False
         except Exception as e:
             print(e)
+
+
+    def add_user(user_id):
+        cur.execute('INSERT INTO LK VALUES (?,?,?,?,?,?,?);', (user_id, 0, 0, 0, True, 0, 0))
+        con.commit()
 
 
     def add_products(key: str, name: str, description: str, amount: int, price: int, logo: int):
@@ -165,19 +173,18 @@ try:
         return list(cur.execute('SELECT COUNT(*) FROM busy_wallets WHERE coin=?', (coin,)).fetchone())
 
 
-    def get_from_lk():
-        cur.execute(f'SELECT id_LK FROM LK')
-        return cur.fetchall()
+    def get_from_lk(id_u):
+        cur.execute(f'SELECT id_LK FROM LK WHERE id_LK=?', (id_u,))
+        return cur.fetchone()[0]
+
 
     db_start()
-    # add_users(user_id=124125, username='Booblya', email='qweyu@mail.ru')
     # add_products('Skit', 'КОТАН', 'вот такое животное', 100, 10101, 1488)
     # add_orders(124125, 1, 5)
     # add_history('qweqwrhfhfqwe21312@21311', 1)
     # print(get_all_products(-1))
     # print(show_lk(choice='email', user_id=124125))
     # print(show_lk())
-
 
 except Exception as TotalError:
     print("Ошибка при работе с SQLite3:", TotalError, end='\n')
