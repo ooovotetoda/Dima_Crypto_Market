@@ -1,6 +1,8 @@
 import sqlite3 as sql
 from datetime import datetime
 
+from wallet_functions import gen_address
+
 # psycopg2-binary
 
 """
@@ -58,10 +60,6 @@ try:
              id_products INTEGER NOT NULL,
              sum INTEGER NOT NULL,
              date DATE NOT NULL);''')
-        cur.execute('''CREATE TABLE IF NOT EXISTS busy_wallets
-                     (id_person TEXT,
-                     wallet TEXT PRIMARY KEY,
-                     coin TEXT);''')
         con.commit()
 
 
@@ -72,18 +70,15 @@ try:
 
             if not rez:
                 print('Добавил в базу')
-                add_user(user_id)
+                addr, wif = gen_address(user_id)
+                cur.execute('INSERT INTO LK VALUES (?,?,?,?,?,?,?);', (user_id, 0, 0, 0, True, addr, wif))
+                con.commit()
                 return True
             else:
                 print('Уже в базе')
                 return False
         except Exception as e:
             print(e)
-
-
-    def add_user(user_id):
-        cur.execute('INSERT INTO LK VALUES (?,?,?,?,?,?,?);', (user_id, 0, 0, 0, True, 0, 0))
-        con.commit()
 
 
     def add_products(key: str, name: str, description: str, amount: int, price: int, logo: int):
