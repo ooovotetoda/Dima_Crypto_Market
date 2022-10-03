@@ -173,13 +173,12 @@ try:
         return list(cur.execute('SELECT COUNT(*) FROM busy_wallets WHERE coin=?', (coin,)).fetchone())
 
 
-    def get_from_lk():
-        cur.execute(f'SELECT id_LK FROM LK')
-        return cur.fetchall()
+    def get_from_lk(id_u):
+        cur.execute(f'SELECT id_LK FROM LK WHERE id_LK=?', (id_u,))
+        return cur.fetchone()[0]
 
 
     db_start()
-    first_seen(user_id=124125)
     # add_products('Skit', 'КОТАН', 'вот такое животное', 100, 10101, 1488)
     # add_orders(124125, 1, 5)
     # add_history('qweqwrhfhfqwe21312@21311', 1)
