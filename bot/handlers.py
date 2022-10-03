@@ -1,9 +1,10 @@
 from aiogram import Router
 from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Command
+from aiogram.filters import Command, Text
 
 from states import states
 from data_base.SqlLite_db import first_seen
+from data_base.wallet_functions import gen_address
 
 
 router = Router()
@@ -19,6 +20,17 @@ async def cmd_start(message: Message):
         reply_markup=state_data.keyboard,
         parse_mode="HTML"
     )
+
+@router.callback_query(Text(text="go_pay"))
+async def process_callback(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    state_data = states.get(callback.data)
+    await callback.message.edit_text(
+        text=f"Адрес для перевода:\n<b>{gen_address(user_id)[0]}</b>",
+        reply_markup=state_data.keyboard,
+        parse_mode="HTML"
+    )
+    await callback.answer()
 
 
 @router.callback_query()
