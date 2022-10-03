@@ -15,11 +15,10 @@ class StatesMsg:
                 "callback": "products",
                 "keyboard": prods}
 
-    # go_pay = {"message": f"Адрес для перевода:<b>\n{public}\n\n</b>"
-    #                     f"{get_from_lk(823932122)}",
-    #          "button": "Перейти к оплате",
-    #          "callback": "go_pay",
-    #          "keyboard": ["check_transaction"]}
+    go_pay = {"message": f"Адрес для перевода:<b></b>",
+             "button": "Перейти к оплате",
+             "callback": "go_pay",
+             "keyboard": ["check_transaction"]}
 
     personal_cabinet = {"message": "Это ваш личный кабинет",
                         "button": "Личный кабинет",

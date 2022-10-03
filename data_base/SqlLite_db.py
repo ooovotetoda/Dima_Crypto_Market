@@ -1,7 +1,7 @@
 import sqlite3 as sql
 from datetime import datetime
 
-from wallet_functions import gen_address
+from data_base.wallet_functions import gen_address
 
 # psycopg2-binary
 
