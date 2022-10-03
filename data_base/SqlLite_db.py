@@ -155,7 +155,7 @@ try:
             print(e)
 
 
-    def get_from_lk(id_u):
+    def get_address(id_u):
         cur.execute(f'SELECT address FROM LK WHERE id_LK=?', (id_u,))
         return cur.fetchone()[0]
 
