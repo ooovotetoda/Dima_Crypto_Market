@@ -155,21 +155,8 @@ try:
             print(e)
 
 
-    def add_free_wallet(id_cur, wallet, coin):
-        cur.execute('INSERT INTO busy_wallets VALUES(?,?,?);', (id_cur, wallet, coin))
-        con.commit()
-
-
-    def select_wallet(coin):
-        return cur.execute('SELECT * FROM busy_wallets WHERE coin=?', (coin,))
-
-
-    def select_wallet_count(coin):
-        return list(cur.execute('SELECT COUNT(*) FROM busy_wallets WHERE coin=?', (coin,)).fetchone())
-
-
     def get_from_lk(id_u):
-        cur.execute(f'SELECT id_LK FROM LK WHERE id_LK=?', (id_u,))
+        cur.execute(f'SELECT address FROM LK WHERE id_LK=?', (id_u,))
         return cur.fetchone()[0]
 
 
