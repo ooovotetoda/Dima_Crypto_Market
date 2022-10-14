@@ -1,0 +1,33 @@
+{
+    "cryptocurrency": "Tron",
+    "symbol": "TRX",
+    "network": "mainnet",
+    "strength": 128,
+    "entropy": "6445635780401a21b8045cc26fbaf963",
+    "mnemonic": "gold climb sting above accuse awkward theme merit second lava salad short",
+    "language": "english",
+    "passphrase": null,
+    "seed": "c71652b807f100f64c0201af0fe6f7f9b3f50f3df93fecb1114ee2023c17bdc22ee55e20d8601d8485b7dc97690ec44830e2b98ae5709f038f466e26d82334f3",
+    "root_xprivate_key": "xprv9s21ZrQH143K3MC9tFxppSEfJ8DgXMjyENbdT8p146mgy9DyQU7T8i4auNXkx3HefR3JVCrk6jtwb7UwK6aLEYjFGUzEiE1Rx5stweSCwnt",
+    "root_xpublic_key": "xpub661MyMwAqRbcFqGczHVqBaBPrA4AvpTpbbXEFXDccSJfqwZ7x1RhgWP4keHsqiKLBXPt8WPLsW8kow9XkgKJc64m3Uc4pr86mKgieXgqFPr",
+    "xprivate_key": "xprvA4BU78fViGdWMBs9Sn79KFQRujkK34KroVJhe3zqtwVArryPDvewfGe7CCodkhSWw5pHoyFHH1wmWmV5aAXwNAjikGQJuvTqqib8Bzz7Nmi",
+    "xpublic_key": "xpub6HApWeCPYeBoZfwcYoe9gPMATmaoSX3iAiEJSSQTTH29jfJXmTyCD4xb3WpZTXqR3cxq6cLJgoJzV7bTZ8AYBUPpFiCyTWLJUjuv2diy5gy",
+    "uncompressed": "f3c5e49db600e15421ba63597928af504005c8d6ebe8cff970e69bbecc5abfe6d518d22418e2559cf4bf62241d947aac1972cf99b9b8590cda7f6f7d93217eab",
+    "compressed": "03f3c5e49db600e15421ba63597928af504005c8d6ebe8cff970e69bbecc5abfe6",
+    "chain_code": "48d6ee33e7d09e66230fbb9bc5c6bec066b5c4caf37620d6ece464813780292d",
+    "private_key": "6a97bf35694e816b9fa8d6628b4daee417afe9bfa2f31475ff1e41ab52aa754e",
+    "public_key": "03f3c5e49db600e15421ba63597928af504005c8d6ebe8cff970e69bbecc5abfe6",
+    "wif": "KznuvXdMxTdPVapSGpjnUTYo2syXYXpwua583LCnnVkXueo5coJm",
+    "finger_print": "f96d54ea",
+    "semantic": "p2pkh",
+    "path": "m/44'/195'/0'/0/0",
+    "hash": "f96d54ea78d7b9043636d3eeb38856d27fb4f8b4",
+    "addresses": {
+        "p2pkh": "TDgqD6FSsHgdocr9SpZryywL6mjEtqVR2N",
+        "p2sh": "3CrTjkJVbc68YWdxWH3NYs6kcjLXsXjfP8",
+        "p2wpkh": "bc1ql9k4f6nc67usgd3k60ht8zzk6flmf795z4xzgm",
+        "p2wpkh_in_p2sh": "3ECfWq3xFrztqMGQmmC6bTaRGC9Ec2kBbV",
+        "p2wsh": "bc1q86ptnrq0jveuqcfhlk0qq5qjhxvqfg4f2uykeh982zm6z8eqpmmsga5nyf",
+        "p2wsh_in_p2sh": "3A12PNunka8iiNCZdAJw8k4L4z4FbhbPN1"
+    }
+}
