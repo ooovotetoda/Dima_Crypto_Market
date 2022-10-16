@@ -51,10 +51,3 @@ def gen_wallet():
 
 
 gen_wallet()
-
-WALLET_PUBKEY = 'xpub661MyMwAqRbcFqGczHVqBaBPrA4AvpTpbbXEFXDccSJfqwZ7x1RhgWP4keHsqiKLBXPt8WPLsW8kow9XkgKJc64m3Uc4pr86mKgieXgqFPr'
-user_addr = wallet.create_address(network="TRX", xpub=WALLET_PUBKEY, child=10)
-# or generate a random address, based on timestamp
-rand_addr = wallet.create_address(network="TRX", xpub=WALLET_PUBKEY)
-print(user_addr)
-print(rand_addr)

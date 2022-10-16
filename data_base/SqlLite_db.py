@@ -1,7 +1,9 @@
+import logging
 import sqlite3 as sql
+import sys
 from datetime import datetime
-
-from data_base.wallet_functions import gen_address
+from logging import StreamHandler, Formatter
+import dump
 
 # psycopg2-binary
 
@@ -26,11 +28,22 @@ from data_base.wallet_functions import gen_address
 """
 
 try:
+    logger = logging.getLogger("exampleApp")
+    logger.setLevel(logging.DEBUG)
+
+    handler = StreamHandler(stream=sys.stdout)
+
+
     def db_start():
         global con, cur
-        con = sql.connect(database="../data_base/crypto")  # имя ДБ, к которой мы подключаемся
-        cur = con.cursor()
-        print("Database opened successfully")
+        try:
+            con = sql.connect(database="../data_base/crypto")  # имя ДБ, к которой мы подключаемся
+            cur = con.cursor()
+            handler.setFormatter(Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+            logger.addHandler(handler)
+            logger.debug('DATABASE OPEN SUCCESSFULLY')
+        except Exception as e:
+            print(e)
         cur.execute('''CREATE TABLE IF NOT EXISTS products
              (id_products INTEGER PRIMARY KEY,
              key VARCHAR(100) NOT NULL,
@@ -44,9 +57,11 @@ try:
              balance DECIMAL(12,2) CONSTRAINT LK_balance_check CHECK(balance>=0) DEFAULT 0,
              cur_orders INTEGER DEFAULT 0,
              hist VARCHAR(200) DEFAULT 0,
-             state BLOB DEFAULT FALSE,
+             state BLOB DEFAULT TRUE,
              address VARCHAR(100) DEFAULT 0,
-             wif VARCHAR(100) DEFAULT 0);''')
+             address_hex VARCHAR(100),
+             private_key VARCHAR(100),
+             public_key VARCHAR(100));''')
         cur.execute('''CREATE TABLE IF NOT EXISTS orders  
              (id_orders INTEGER PRIMARY KEY,
              id_user INTEGER NOT NULL,
@@ -60,22 +75,30 @@ try:
              id_products INTEGER NOT NULL,
              sum INTEGER NOT NULL,
              date DATE NOT NULL);''')
+        handler.setFormatter(Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+        logger.addHandler(handler)
+        logger.debug('DATABASE CREATED')
         con.commit()
 
 
     def first_seen(user_id: int):
         try:
-            cur.execute("SELECT id_LK FROM LK WHERE id_LK=?", (user_id,))
-            rez = cur.fetchall()
 
-            if not rez:
-                print('Добавил в базу')
-                addr, wif = gen_address(user_id)
-                cur.execute('INSERT INTO LK VALUES (?,?,?,?,?,?,?);', (user_id, 0, 0, 0, True, addr, wif))
+            cur.execute("SELECT id_LK FROM LK WHERE id_LK=?", (user_id,))
+            res = cur.fetchall()
+
+            if not res:
+                cur.execute('INSERT INTO LK VALUES (?,?,?,?,?,?,?,?,?);',
+                            (user_id, 0, 0, 0, True, *list(dump.gen_address())))
+                handler.setFormatter(Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+                logger.addHandler(handler)
+                logger.debug('THE USER ADDED TO THE DATABASE')
                 con.commit()
                 return True
             else:
-                print('Уже в базе')
+                handler.setFormatter(Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
+                logger.addHandler(handler)
+                logger.debug('THE USER IS IN THE DATABASE')
                 return False
         except Exception as e:
             print(e)
@@ -155,18 +178,25 @@ try:
             print(e)
 
 
-    def get_address(id_u):
-        cur.execute(f'SELECT address FROM LK WHERE id_LK=?', (id_u,))
-        return cur.fetchone()[0]
+    def get_addr_key(id_u):
+        cur.execute(f'SELECT address, address_hex, private_key, public_key FROM LK WHERE id_LK=?', (id_u,))
+        return list(cur.fetchone())
+
+
+    def send(id_u, to_wallet):
+        try:
+            w = get_addr_key(id_u)
+            amount = dump.get_balance(w[0], 'USDT')
+            dump.send_tron(w[0], w[1], to_wallet, float(amount))
+        except Exception as e:
+            print(e)
 
 
     db_start()
-    # add_products('Skit', 'КОТАН', 'вот такое животное', 100, 10101, 1488)
-    # add_orders(124125, 1, 5)
-    # add_history('qweqwrhfhfqwe21312@21311', 1)
-    # print(get_all_products(-1))
-    # print(show_lk(choice='email', user_id=124125))
-    # print(show_lk())
+    first_seen(11)
+    print(get_addr_key(11))
+    print(send(11, 'TD8iW5o5qF5L9EkYRfKqcxU1S7MrmvdZ6M'))
+
 
 except Exception as TotalError:
     print("Ошибка при работе с SQLite3:", TotalError, end='\n')

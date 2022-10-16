@@ -4,135 +4,75 @@ import random
 import base58
 import ecdsa
 import requests
+import tronpy.keys
 from Crypto.Hash import keccak
 from tronpy import Tron
 from tronpy.keys import PrivateKey
+from tronpy.providers import HTTPProvider
+
+client = Tron(HTTPProvider(api_key='29d8fee1-28af-4c32-81cb-5f53e5da67b5'))
+HALF_TRON = 500000
+ONE_TRON = 1000000
 
 
-def keccak256(data):
-    hasher = keccak.new(digest_bits=256)
-    hasher.update(data)
-    return hasher.digest()
+def gen_address():
+    def keccak256(data):
+        hasher = keccak.new(digest_bits=256)
+        hasher.update(data)
+        return hasher.digest()
+
+    def get_signing_key(raw_priv):
+        return ecdsa.SigningKey.from_string(raw_priv, curve=ecdsa.SECP256k1)
+
+    def verifying_key_to_addr(key):
+        pub_key = key.to_string()
+        primitive_addr = b'\x41' + keccak256(pub_key)[-20:]
+        # 0 (zero), O (capital o), I (capital i) and l (lower case L)
+        addr = base58.b58encode_check(primitive_addr)
+        return addr
+
+    while True:
+        raw = bytes(random.sample(range(0, 256), 32))
+        key = get_signing_key(raw)
+        addr = verifying_key_to_addr(key.get_verifying_key()).decode()
+
+        WALLET_ADDRESS = addr
+        WALLET_ADDRESS_HEX = base58.b58decode_check(addr.encode()).hex()
+        PUBLIC_KEY = key.get_verifying_key().to_string().hex()
+        PRIVATE_KEY = raw.hex()
+
+        # print('Address:     ', WALLET_ADDRESS)
+        # print('Address(hex):', WALLET_ADDRESS_HEX)
+        # print('Public Key:  ', PUBLIC_KEY)
+        # print('Private Key: ', PRIVATE_KEY)
+        break
+    return WALLET_ADDRESS, WALLET_ADDRESS_HEX, PUBLIC_KEY, PRIVATE_KEY
 
 
-def get_signing_key(raw_priv):
-    # SigningKey генератор, связанный с определённой кривой. (выбор открытой точки
-    # from_string самый короткий формат сериализации SigningKey
-    return ecdsa.SigningKey.from_string(raw_priv, curve=ecdsa.SECP256k1)
-
-
-def verifying_key_to_addr(key):
-    pub_key = key.to_string()
-    #
-    # переводим строку в байты
-    primitive_addr = b'\x41' + keccak256(pub_key)[-20:]
-    # 0 (zero), O (capital o), I (capital i) and l (lower case L)
-    addr = base58.b58encode_check(primitive_addr)
-    return addr
-
-
-API_BASE_URL = 'https://api.shasta.trongrid.io'
-MY_PRIV_KEY = '78c93b6ea3df0e48b270f97d948275c3fc7e23d187b464cf26b7a9b9888f3f98'
-# hex
-FROM_ADDR = '411821a07c8ff1e75f144899e85658d416d2ad0724'
-TO_ADDR = "TEiMQZpHs4N4HuTKP3xcCKZ68XSQSfEbMW"
-AMOUNT = 1000
-
-
-# the address must be base58 or hex
-def get_balance(address, token_symbol):
-    url = "https://apilist.tronscan.org/api/account"
-    payload = {
-        "address": address,
-    }
-    res = requests.get(url, params=payload)
-    trc20token_balances = json.loads(res.text)["trc20token_balances"]
-    print(trc20token_balances)
-    token_balance = next((item for item in trc20token_balances if item["symbol"] == token_symbol), None)
-    if token_balance is None:
-        return 0
-    else:
-        return int(token_balance["balance"])
-
-
-def get_transaction_info(owner_address):
-    url = "https://api.shasta.trongrid.io/v1/accounts/THtbMw6byXuiFhsRv1o1BQRtzvube9X1jx/transactions?only_confirmed=false&only_unconfirmed=false&only_to=false&only_from=false"
-    headers = {"accept": "application/json"}
-    response = requests.get(url, headers=headers)
-    print(response.text)
-
-
-def create_transaction():
+def create_transaction(from_address, to_address, value):
     url = 'https://api.shasta.trongrid.io/wallet/triggersmartcontract'
-
     payload = {
-        'owner_address': '419adf1f1cd48349087161c262051e7dd589baf2cb',
-        'contract_address': '41a7837ce56da0cbb28f30bcd5bff01d4fe7e4c6e3',
+        'owner_address': f'{from_address}',
+        'contract_address': f'{to_address}',
         'function_selector': 'transfer(address,uint256)',
-        'call_value': 0
+        'call_value': int(f'{value}')
     }
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
-
     response = requests.post(url, json=payload, headers=headers)
-
-    print(response.text)
-
-
-def check_transaction_by_hash(hash):
-    hash_url = f'https://apilist.tronscanapi.com/api/transaction-info?hash={hash}'
-    res = json.loads(requests.get(hash_url).text)
-    tokenTransferInfo = res['tokenTransferInfo']
-    confirmed, from_address, to_address, amount_str = res['confirmed'], \
-                                                      tokenTransferInfo['from_address'], \
-                                                      tokenTransferInfo['to_address'], \
-                                                      tokenTransferInfo['amount_str']
-    return confirmed, from_address, to_address, int(amount_str) / 1000000
-
-
-# get_account_info('TUismYHRpvEMUjcvjJYttCZbNKjKNzLHuG')
-
-while True:
-    # take 32 elements from area [0;256)
-    # examples [59, 55, .., 106]
-    raw = bytes(random.sample(range(0, 256), 32))
-    # raw = bytes.fromhex('a0a7acc6256c3..........b9d7ec23e0e01598d152')
-    key = get_signing_key(raw)
-    addr = verifying_key_to_addr(key.get_verifying_key()).decode()
-    print('Address:     ', addr)
-    print('Address(hex):', base58.b58decode_check(addr.encode()).hex())
-    print('Public Key:  ', key.get_verifying_key().to_string().hex())
-    print('Private Key: ', raw.hex())
-    break
-
-HALF_TRON = 500000
-ONE_TRON = 1000000
-
-# your wallet information
-WALLET_ADDRESS = addr
-PRIVATE_KEY = raw.hex()
-
-# connect to the Tron blockchain
-client = Tron()
-
-
-def gen_address():
-    url = "https://api.shasta.trongrid.io/wallet/generateaddress"
-    headers = {"accept": "application/json"}
-    response = requests.get(url, headers=headers)
     print(response.text)
 
 
 # send some 'amount' of Tron to the 'wallet' address
-def send_tron(amount, wallet):
+def send_tron(from_wallet, private_key, to_wallet, amount):
     try:
-        priv_key = PrivateKey(bytes.fromhex(PRIVATE_KEY))
+        priv_key = PrivateKey(bytes.fromhex(private_key))
 
         # create transaction and broadcast it
         txn = (
-            client.trx.transfer(WALLET_ADDRESS, str(wallet), int(amount))
+            client.trx.transfer(str(from_wallet), str(to_wallet), int(amount))
             .memo("Первая тестовая транза")
             .build()
             .inspect()
@@ -147,7 +87,77 @@ def send_tron(amount, wallet):
         return ex
 
 
-# send_tron(1, 'TDgqD6FSsHgdocr9SpZryywL6mjEtqVR2N')
-# tronWeb.trx.getTransaction("")
-get_transaction_info('41a63aeee03f57ed54ff4fbdc8285563e13d682418')
-get_balance('TAqZzenukZdnFdhTxeEtPSEBrD42EKzm3N', 'TRX')
+# запоминание стоимости товара + get
+
+
+# the address must be base58 or hex
+def get_balance(wallet, net):
+    if net == 'TRX':
+        try:
+            return client.get_account_balance(wallet)
+        except tronpy.exceptions.AddressNotFound:
+            return 'AccountNotFound'
+    elif net == 'USDT':
+        r = requests.get('https://nileapi.tronscan.org/api/account/tokens'
+                         f'?address={wallet}'
+                         '&start=0'
+                         '&limit=20'
+                         '&token='
+                         '&hidden=0'
+                         '&show=0'
+                         '&sortType=0')
+        if r.status_code == 200:
+            for token in r.json()['data']:
+                if token['tokenAbbr'].lower() == 'usdt':
+                    print(token)
+                    return token['quantity']
+            else:
+                return float(0)
+
+
+def get_trans_by_wallet(wallet, net):
+    if net == 'TRX':
+        r = requests.get('https://nileapi.tronscan.org/api/transaction'
+                         '?sort=-timestamp'
+                         '&count=true'
+                         '&limit=20'
+                         '&start=0'
+                         f'&address={wallet}')
+        if r.status_code == 200:
+            return r.json()
+        else:
+            return {}
+    elif net == 'USDT':
+        r = requests.get('https://nileapi.tronscan.org/api/token_trc20/transfers'
+                         '?limit=20'
+                         '&start=0'
+                         '&sort=-timestamp'
+                         '&count=true'
+                         f'&relatedAddress={wallet}')
+        if r.status_code == 200:
+            return r.json()
+        else:
+            return {}
+
+
+def check_transaction_by_hash(hash):
+    hash_url = f'https://apilist.tronscanapi.com/api/transaction-info?hash={hash}'
+    res = json.loads(requests.get(hash_url).text)
+    tokenTransferInfo = res['tokenTransferInfo']
+    confirmed, from_address, to_address, amount_str = res['confirmed'], \
+                                                      tokenTransferInfo['from_address'], \
+                                                      tokenTransferInfo['to_address'], \
+                                                      tokenTransferInfo['amount_str']
+    return confirmed, from_address, to_address, int(amount_str) / 1000000
+
+
+print(send_tron('TBJpRJvCQFza8GWugJhbvUUaxoTFwEhrDC',
+          '9ce15cd712794bb989e91ae6bc4e557d6bedaca808d4243c3e0a6a68bce9e6a250183c28d5900fcdbcf83324d00c59a4df7985b65440c502206a3161f7658d4c',
+          'TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 1))
+if __name__ == '__main__':
+    print(get_balance('TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 'USDT'))
+    print(get_trans_by_wallet('TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 'USDT'))
+    print(create_transaction('TDgqD6FSsHgdocr9SpZryywL6mjEtqVR2N', 'TEVutcRXu8MDT1UiGYmEJbzVvdz3LudR8a', 0))
+    # print(get_trans_by_wallet('TEVutcRXu8MDT1UiGYmEJbzVvdz3LudR8a', 'TRX'))
+    # print(tronpy.keys.to_base58check_address('TDgqD6FSsHgdocr9SpZryywL6mjEtqVR2N'))
+    # qq = client.generate_address()
