@@ -1,4 +1,4 @@
-from products_list import available_products
+from bot.products_list import available_products
 
 prods = []
 for key, val in available_products.items():

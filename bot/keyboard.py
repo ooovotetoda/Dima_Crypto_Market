@@ -1,5 +1,5 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from buttons import *
+from bot.buttons import *
 
 
 def get_keyboard(buttons, prev_state):

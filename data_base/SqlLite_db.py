@@ -3,7 +3,7 @@ import sqlite3 as sql
 import sys
 from datetime import datetime
 from logging import StreamHandler, Formatter
-import dump
+import data_base.dump
 
 # psycopg2-binary
 

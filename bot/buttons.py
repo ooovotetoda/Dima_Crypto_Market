@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton
 
-from products_list import available_products
-from texts import StatesMsg
+from bot.products_list import available_products
+from bot.texts import StatesMsg
 
 personal_cabinet = InlineKeyboardButton(text=StatesMsg.personal_cabinet.get("button"), callback_data=StatesMsg.personal_cabinet.get("callback"))
 go_pay = InlineKeyboardButton(text=StatesMsg.go_pay.get("button"), callback_data=StatesMsg.go_pay.get("callback"))

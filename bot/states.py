@@ -1,6 +1,6 @@
-from texts import StatesMsg
-from keyboard import get_keyboard
-from products_list import available_products
+from bot.texts import StatesMsg
+from bot.keyboard import get_keyboard
+from bot.products_list import available_products
 
 class Mess:
     def __init__(self, text_state, keyboard, prev_state):

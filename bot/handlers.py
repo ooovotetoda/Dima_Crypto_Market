@@ -2,8 +2,8 @@ from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, Text
 
-from states import states
-from data_base.SqlLite_db import first_seen, get_address
+from bot.states import states
+from data_base.SqlLite_db import first_seen, get_addr_key
 
 
 router = Router()
