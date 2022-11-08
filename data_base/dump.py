@@ -8,9 +8,9 @@ import tronpy.keys
 from Crypto.Hash import keccak
 from tronpy import Tron
 from tronpy.keys import PrivateKey
-from tronpy.providers import HTTPProvider
 
-client = Tron(HTTPProvider(api_key='29d8fee1-28af-4c32-81cb-5f53e5da67b5'))
+# client = Tron(HTTPProvider(endpoint_uri='https://api.trongrid.io/', api_key='29d8fee1-28af-4c32-81cb-5f53e5da67b5',))
+client = Tron(network='shasta', conf={'fee_limit': 10_000_000, 'timeout': 20.0})
 HALF_TRON = 500000
 ONE_TRON = 1000000
 
@@ -55,7 +55,7 @@ def create_transaction(from_address, to_address, value):
         'owner_address': f'{from_address}',
         'contract_address': f'{to_address}',
         'function_selector': 'transfer(address,uint256)',
-        'call_value': int(f'{value}')
+        'call_value': f'{value}'
     }
     headers = {
         'Accept': 'application/json',
@@ -66,21 +66,18 @@ def create_transaction(from_address, to_address, value):
 
 
 # send some 'amount' of Tron to the 'wallet' address
-def send_tron(from_wallet, private_key, to_wallet, amount):
+def send_tron(from_wallet, to_wallet, amount):
     try:
-        priv_key = PrivateKey(bytes.fromhex(private_key))
+        priv_key = PrivateKey(bytes.fromhex('9f0e8cbf8d9f2a2d3ce22983c6af7e8ec1c4545fa71367a3b33e85dd7a669e52'))
 
-        # create transaction and broadcast it
         txn = (
-            client.trx.transfer(str(from_wallet), str(to_wallet), int(amount))
-            .memo("Первая тестовая транза")
+            client.trx.transfer("TJzXt1sZautjqXnpjQT4xSCBHNSYgBkDr3", "TVjsyZ7fYF3qLF6BQgPmTEZy1xrNNyVAAA", 1_000)
+            .memo("test memo")
             .build()
-            .inspect()
             .sign(priv_key)
-            .broadcast()
         )
-        # wait until the transaction is sent through and then return the details
-        return txn.wait()
+        print(txn.txid)
+        print(txn.broadcast().wait())
 
     # return the exception
     except Exception as ex:
@@ -140,6 +137,7 @@ def get_trans_by_wallet(wallet, net):
             return {}
 
 
+
 def check_transaction_by_hash(hash):
     hash_url = f'https://apilist.tronscanapi.com/api/transaction-info?hash={hash}'
     res = json.loads(requests.get(hash_url).text)
@@ -151,13 +149,30 @@ def check_transaction_by_hash(hash):
     return confirmed, from_address, to_address, int(amount_str) / 1000000
 
 
-print(send_tron('TBJpRJvCQFza8GWugJhbvUUaxoTFwEhrDC',
-          '9ce15cd712794bb989e91ae6bc4e557d6bedaca808d4243c3e0a6a68bce9e6a250183c28d5900fcdbcf83324d00c59a4df7985b65440c502206a3161f7658d4c',
-          'TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 1))
-if __name__ == '__main__':
-    print(get_balance('TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 'USDT'))
-    print(get_trans_by_wallet('TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 'USDT'))
-    print(create_transaction('TDgqD6FSsHgdocr9SpZryywL6mjEtqVR2N', 'TEVutcRXu8MDT1UiGYmEJbzVvdz3LudR8a', 0))
-    # print(get_trans_by_wallet('TEVutcRXu8MDT1UiGYmEJbzVvdz3LudR8a', 'TRX'))
-    # print(tronpy.keys.to_base58check_address('TDgqD6FSsHgdocr9SpZryywL6mjEtqVR2N'))
-    # qq = client.generate_address()
+# if __name__ == '__main__':
+print(client.to_base58check_address('TK1yi9LxfZ2UFHxVVHi6sjQFxmqrCV5Ene'))
+# print(send_tron('TBJpRJvCQFza8GWugJhbvUUaxoTFwEhrDC', 'TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 1))
+print(get_balance('TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 'USDT'))
+# print(get_trans_by_wallet('TDpdD7SsYLHD1FAp888G2RfsSc2EmTXErs', 'USDT'))
+# print(create_transaction('TDgqD6FSsHgdocr9SpZryywL6mjEtqVR2N', 'TEVutcRXu8MDT1UiGYmEJbzVvdz3LudR8a', 0))
+# print(get_trans_by_wallet('TEVutcRXu8MDT1UiGYmEJbzVvdz3LudR8a', 'TRX'))
+print(tronpy.keys.to_base58check_address('TBJpRJvCQFza8GWugJhbvUUaxoTFwEhrDC'))
+# print(client.get_account('TYTaZ9S5uVoVUuU2koSgQaPU3voTWuU6BB'))
+# TVUkNF1VFLrzKWnNhSTwQMTMrGXkoRvqw7
+# TYTaZ9S5uVoVUuU2koSgQaPU3voTWuU6BB
+
+url = "https://api.shasta.trongrid.io/wallet/createaccount"
+
+payload = {
+    "owner_address": "THUv47RmURMHf1ncfVzqig5FUyX8hznU16",
+    "account_address": "TBJpRJvCQFza8GWugJhbvUUaxoTFwEhrDC",
+    "visible": False
+}
+headers = {
+    "accept": "application/json",
+    "content-type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.text)
