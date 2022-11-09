@@ -2,8 +2,8 @@ from aiogram import Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, Text
 
-from bot.states import states
-from data_base.SqlLite_db import first_seen, get_addr_key
+from states import states
+from data_base.SqlLite_db import 
 
 
 router = Router()
@@ -25,7 +25,7 @@ async def process_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
     state_data = states.get(callback.data)
     await callback.message.edit_text(
-        text=f"Адрес для перевода:\n<b>{get_address(user_id)}</b>",
+        text=f"Адрес для перевода:\n<b></b>",
         reply_markup=state_data.keyboard,
         parse_mode="HTML"
     )

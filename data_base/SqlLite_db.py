@@ -1,9 +1,12 @@
 import logging
 import sqlite3 as sql
 import sys
+import time
 from datetime import datetime
 from logging import StreamHandler, Formatter
-import data_base.dump
+from random import uniform
+
+from data_base import payments_func
 
 # psycopg2-binary
 
@@ -55,26 +58,20 @@ try:
         cur.execute('''CREATE TABLE IF NOT EXISTS LK  
              (id_LK INTEGER CONSTRAINT LK_id PRIMARY KEY NOT NULL,
              balance DECIMAL(12,2) CONSTRAINT LK_balance_check CHECK(balance>=0) DEFAULT 0,
-             cur_orders INTEGER DEFAULT 0,
-             hist VARCHAR(200) DEFAULT 0,
-             state BLOB DEFAULT TRUE,
-             address VARCHAR(100) DEFAULT 0,
-             address_hex VARCHAR(100),
-             private_key VARCHAR(100),
-             public_key VARCHAR(100));''')
+             hist VARCHAR(200) DEFAULT 0);''')
         cur.execute('''CREATE TABLE IF NOT EXISTS orders  
-             (id_orders INTEGER PRIMARY KEY,
+             (id_orders INTEGER PRIMARY KEY AUTOINCREMENT,
              id_user INTEGER NOT NULL,
              id_products INTEGER NOT NULL,
              amount INTEGER,
              amount_payable INTEGER NOT NULL);''')
         cur.execute('''CREATE TABLE IF NOT EXISTS history  
-             (id_hash TEXT NOT NULL,
-             id_orders INTEGER NOT NULL,
-             id_users INTEGER NOT NULL,
-             id_products INTEGER NOT NULL,
+             (id_user INTEGER NOT NULL,
              sum INTEGER NOT NULL,
-             date DATE NOT NULL);''')
+             date DATE NOT NULL,
+             flag BLOB DEFAULT 0);''')
+        cur.execute('''CREATE TABLE IF NOT EXISTS main_balance
+             (balance INTEGER NOT NULL);''')
         handler.setFormatter(Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
         logger.addHandler(handler)
         logger.debug('DATABASE CREATED')
@@ -83,13 +80,11 @@ try:
 
     def first_seen(user_id: int):
         try:
-
             cur.execute("SELECT id_LK FROM LK WHERE id_LK=?", (user_id,))
             res = cur.fetchall()
-
             if not res:
-                cur.execute('INSERT INTO LK VALUES (?,?,?,?,?,?,?,?,?);',
-                            (user_id, 0, 0, 0, True, *list(dump.gen_address())))
+                cur.execute('INSERT INTO LK VALUES (?,?,?);',
+                            (user_id, 0, 0))
                 handler.setFormatter(Formatter(fmt='[%(asctime)s: %(levelname)s] %(message)s'))
                 logger.addHandler(handler)
                 logger.debug('THE USER ADDED TO THE DATABASE')
@@ -132,38 +127,19 @@ try:
             raise Exception
 
 
-    def add_history(id_hash: str, curr_order: int):
-        try:
-            if cur.execute('SELECT * FROM orders'):
-                cur.execute(
-                    '''SELECT orders.id_user as users, orders.id_products as products , orders.amount_payable as amount 
-                    FROM orders WHERE id_orders =?''',
-                    [curr_order])
-                record = cur.fetchone()
-                date = datetime.today().strftime('%Y-%m-%d %H:%M')
-                cur.execute('INSERT INTO history VALUES(?, ?, ?, ?, ?, ?);',
-                            (id_hash, curr_order, record[0], record[1], record[2], date))
-                con.commit()
-            else:
-                print('Пустая БД')
-                raise Exception
-        except Exception as e:
-            print(e)
-
-
     def get_all_products(choice=-1):  # можно делать через свой курсор
-        danya_dict = {}
+        dima_dict = {}
         if choice == -1:
             cur.execute('SELECT * FROM products')
         else:
             cur.execute('SELECT * FROM products WHERE id_products=?', [choice])
         for elem in cur.fetchall():
-            danya_dict[elem[1]] = {'id': f'{elem[0]}',
-                                   'name': f'{elem[2]}', 'description': f'{elem[3]}',
-                                   'amount': f'{elem[4]}',
-                                   'price': f'{elem[5]}', 'logo': f'{elem[6]}'}
+            dima_dict[elem[1]] = {'id': f'{elem[0]}',
+                                  'name': f'{elem[2]}', 'description': f'{elem[3]}',
+                                  'amount': f'{elem[4]}',
+                                  'price': f'{elem[5]}', 'logo': f'{elem[6]}'}
 
-        return danya_dict
+        return dima_dict
 
 
     def show_lk(choice='*', user_id=0):
@@ -178,25 +154,53 @@ try:
             print(e)
 
 
-    def get_addr_key(id_u):
-        cur.execute(f'SELECT address, address_hex, private_key, public_key FROM LK WHERE id_LK=?', (id_u,))
-        return list(cur.fetchone())
+    # sup
+    def search_by_orders(id_u):
+        res = 0
+        cur.execute('SELECT amount_payable FROM orders WHERE id_user=?', (id_u,))
+        r = cur.fetchall()
+        for i in r:
+            for n in i:
+                res += n
+        return res
 
 
-    def send(id_u, to_wallet):
-        try:
-            w = get_addr_key(id_u)
-            amount = dump.get_balance(w[0], 'USDT')
-            dump.send_tron(w[0], w[1], to_wallet, float(amount))
-        except Exception as e:
-            print(e)
+    def payments_create(id_u: int):
+        summ = search_by_orders(id_u)
+        payment = summ + uniform(0.001, 0.005)  # sum randomize
+        date = datetime.today().strftime('%Y-%m-%d %H:%M')  # date warning
+
+        while round(payment, 4) is cur.execute('SELECT amount_payable FROM orders WHERE id_user=?', (id_u,)):
+            payment = summ + uniform(0.001, 0.005)
+        payment = round(payment, 4)
+        if not cur.execute('SELECT * FROM history WHERE id_user=?', (id_u,)):
+            cur.execute('INSERT INTO history VALUES (?,?,?,?)', (id_u, payment, date, 0))
+            con.commit()
+        else:
+            logger.addHandler(handler)
+            logger.debug('THIS USER HAS ALREADY ORDERED')
+
+
+    def balance_vis(id_u):
+        flag = False
+        cur.execute('SELECT sum FROM history WHERE id_user=?', (id_u,))
+        needed = int(cur.fetchall()[0][0])
+
+        balance_cur = payments_func.get_balance()
+        needed += balance_cur
+        while True:
+            if payments_func.get_balance() == needed:
+                cur.execute('UPDATE history SET flag=? WHERE id_user=?', (True, id_u))
+                flag = True
+                con.commit()
+                return flag
+            time.sleep(100)
 
 
     db_start()
-    first_seen(11)
-    print(get_addr_key(11))
-    print(send(11, 'TD8iW5o5qF5L9EkYRfKqcxU1S7MrmvdZ6M'))
-
+    first_seen(13)
+    # print(get_addr_key(13))
+    payments_create(1)
 
 except Exception as TotalError:
     print("Ошибка при работе с SQLite3:", TotalError, end='\n')
